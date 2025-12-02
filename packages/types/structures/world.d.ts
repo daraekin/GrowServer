@@ -23,10 +23,32 @@ export interface TileData {
   dice?: Dice;
   provider?: Provider;
   displayBlock?: DisplayBlock;
+  vending?: VendingMachine;
+  spotlight?: Spotlight;
+  displayShelf?: DisplayShelf;
+  itemSucker?: ItemSucker;
 }
 
 export interface Provider {
-  date: number;
+  date: number; // Time when the provider will be ready (or was harvested?)
+}
+
+export interface VendingMachine {
+  price: number;
+  item: number;
+}
+
+export interface Spotlight {
+  enabled: boolean;
+}
+
+export interface DisplayShelf {
+  item: number; // Item ID being displayed
+}
+
+export interface ItemSucker {
+  item: number; // Item ID being sucked/magnetized
+  amount: number;
 }
 
 export interface Mannequin {

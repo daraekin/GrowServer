@@ -51,32 +51,43 @@ export class State {
       return;
     if (this.block === undefined) return;
 
-    const itemMeta = this.base.items.metadata.items.get(
-      (this.block.fg || this.block.bg).toString(),
-    )!;
+    // We need to check both FG and BG for effects
+    const fgID = this.block.fg;
+    const bgID = this.block.bg;
 
-    switch (itemMeta.type) {
-      case ActionTypes.CHECKPOINT: {
-        this.peer.send(
-          Variant.from(
-            { netID: this.peer.data.netID, delay: 0 },
-            "SetRespawnPos",
-            this.pos,
-          ),
-        );
-        this.peer.data.lastCheckpoint = {
-          x: Math.round((this.tank.data?.xPos as number) / 32),
-          y: Math.round((this.tank.data?.yPos as number) / 32),
-        };
-        break;
-      }
+    const fgMeta = this.base.items.metadata.items.get(fgID.toString());
+    const bgMeta = this.base.items.metadata.items.get(bgID.toString());
 
-      case ActionTypes.FOREGROUND: {
-        if (itemMeta.id === 3496 || itemMeta.id === 3270) {
-          // Steam testing
-        }
-        break;
-      }
+    // Basic death checks (Lava, Deadly Blocks)
+    if (fgMeta && (fgMeta.type === ActionTypes.LAVA || fgMeta.type === ActionTypes.DEADLY_BLOCK)) {
+      this.peer.respawn();
+      return;
+    }
+
+    // Checkpoints
+    if (fgMeta && fgMeta.type === ActionTypes.CHECKPOINT) {
+      this.peer.send(
+        Variant.from(
+          { netID: this.peer.data.netID, delay: 0 },
+          "SetRespawnPos",
+          this.pos,
+        ),
+      );
+      this.peer.data.lastCheckpoint = {
+        x: Math.round((this.tank.data?.xPos as number) / 32),
+        y: Math.round((this.tank.data?.yPos as number) / 32),
+      };
+    }
+
+    // Trampoline & Bouncy
+    if (fgMeta && (fgMeta.type === ActionTypes.TRAMPOLINE || fgMeta.type === ActionTypes.BOUNCY)) {
+      // Handle bounce physics if server-side physics is desired,
+      // usually client handles bounce but server might enforce state.
+    }
+
+    // Portal/Door entry is usually handled by 'Use' packet, but auto-enter portals exist.
+    if (fgMeta && fgMeta.type === ActionTypes.PORTAL) {
+      // Check if auto-enter
     }
   }
 }
