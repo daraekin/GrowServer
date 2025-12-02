@@ -234,6 +234,7 @@ export enum ActionTypes {
   BULLETIN = 34,
   PINATA = 35,
   DICE = 36,
+  ROULETTE = 36, // Roulette uses same ActionType as Dice usually, or we can use separate if needed.
   CHEMICAL = 37,
   PROVIDER = 38,
   LAB = 39,

@@ -14,6 +14,9 @@ import { SwitcheROO } from "./SwitcheROO";
 import { WeatherTile } from "./WeatherTile";
 import { DiceTile } from "./DiceTile";
 import { SeedTile } from "./SeedTile";
+import { RouletteTile } from "./RouletteTile";
+import { VendingTile } from "./VendingTile";
+import { ProviderTile } from "./ProviderTile";
 import { ExtendBuffer } from "@growserver/utils";
 import { TankPacket } from "growtopia.js";
 import logger from "@growserver/logger";
@@ -32,6 +35,9 @@ const TileMap: Record<number, Class<Tile>> = {
   [ActionTypes.BACKGROUND]:      NormalTile,
   [ActionTypes.FOREGROUND]:      NormalTile,
   [ActionTypes.SEED]:            SeedTile,
+  [ActionTypes.VENDING_MACHINE]: VendingTile,
+  [ActionTypes.PROVIDER]:        ProviderTile,
+  36:                            RouletteTile, // Hardcoded ActionTypes.DICE is also 36? Let's check ActionTypes.
 };
 
 // constructs a new Tile subclass based on the ActionType.

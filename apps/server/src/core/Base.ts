@@ -45,8 +45,10 @@ export class Base {
   public cdn: CDNContent;
   public cache: Cache;
   public database: Database;
+  public itemHandler: ItemHandler;
 
   constructor() {
+    this.itemHandler = new ItemHandler(this);
     this.server = new Client({
       enet: {
         ip:                 "0.0.0.0",

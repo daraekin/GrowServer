@@ -369,14 +369,40 @@ export class Peer extends OldPeer<PeerData> {
     if (typeof this.customPunchID === "number") {
       return this.customPunchID;
     }
-    for (const [itemID, slot] of Object.entries(PUNCH_SLOT_MAP)) {
-      if (
-        this.data.clothing[slot as keyof typeof this.data.clothing] ===
-        Number(itemID)
-      ) {
-        return PUNCH_ID_MAP[Number(itemID)];
+
+    // Check currently equipped items for punch effect
+    // Priority: Hand > Feet > Shirt > Hair (Standard GT priority usually prioritizes Hand items for punch effects)
+    // We iterate through all equipped items and check if they have a punch effect in wiki/metadata
+
+    // Order of priority for checking punch effects (Hand is strongest usually)
+    const slots: (keyof PeerData["clothing"])[] = [
+      "hand",
+      "feet",
+      "face",
+      "mask",
+      "back",
+      "shirt",
+      "pants",
+      "hair",
+      "necklace",
+      "ances",
+    ];
+
+    for (const slot of slots) {
+      const itemID = this.data.clothing[slot];
+      if (!itemID) continue;
+
+      // Check legacy PUNCH_ITEMS first (fast lookup)
+      if (PUNCH_SLOT_MAP[itemID] === slot) {
+        return PUNCH_ID_MAP[itemID];
       }
+
+      // Check wiki data for dynamic punch info (if available in the future structure)
+      // Current structure of ItemsInfo doesn't explicitly have 'punchID', but we can infer or if user added it.
+      // Assuming 'playMods' might contain something or we need to add it to ItemsInfo definition.
+      // For now, let's rely on the hardcoded list but structure this to be easily extensible.
     }
+
     return 0; // default punch
   }
 
@@ -745,20 +771,55 @@ export class Peer extends OldPeer<PeerData> {
 
   // Check every clothes playmods & apply it
   public formPlayMods() {
-    let charActive = 0;
-    const modActive = 0;
+    let charActive = CharacterState.WALK_IN_BLOCKS; // Default state? Usually 0, but sometimes needed.
+    // Reset charActive
+    charActive = 0;
+    let modActive = 0;
 
     Object.keys(this.data.clothing).forEach((k) => {
-      const itemInfo = this.base.items.wiki.find(
-        (i) => i.id === this.data.clothing[k],
-      );
+      const itemID = this.data.clothing[k as keyof PeerData["clothing"]];
+      if (!itemID) return;
+
+      const itemInfo = this.base.items.wiki.find((i) => i.id === itemID);
       const playMods = itemInfo?.playMods || [];
 
+      // Process PlayMods strings
       for (const mod of playMods) {
         const name = mod.toLowerCase();
-        if (name.includes("double jump"))
-          charActive |= CharacterState.DOUBLE_JUMP;
+
+        if (name.includes("double jump")) charActive |= CharacterState.DOUBLE_JUMP;
+        if (name.includes("invis")) charActive |= CharacterState.IS_INVISIBLE;
+        if (name.includes("no hands")) charActive |= CharacterState.NO_HANDS;
+        if (name.includes("no eyes")) charActive |= CharacterState.NO_EYES;
+        if (name.includes("no body")) charActive |= CharacterState.NO_BODY;
+        if (name.includes("devil horns")) charActive |= CharacterState.DEVIL_HORNS;
+        if (name.includes("golden halo")) charActive |= CharacterState.GOLDEN_HALO;
+        if (name.includes("frozen")) charActive |= CharacterState.IS_FROZEN;
+        if (name.includes("cursed")) charActive |= CharacterState.IS_CURSED;
+        if (name.includes("ductaped")) charActive |= CharacterState.IS_DUCTAPED;
+        if (name.includes("shining")) charActive |= CharacterState.IS_SHINING;
+        if (name.includes("zombie")) charActive |= CharacterState.IS_ZOMBIE;
+        if (name.includes("haunted shadows"))
+          charActive |= CharacterState.HAVE_HAUNTED_SHADOWS;
+        if (name.includes("geiger radiation"))
+          charActive |= CharacterState.HAVE_GEIGER_RADIATION;
+        if (name.includes("spotlight")) charActive |= CharacterState.HAVE_REFLECTOR; // Assuming reflector is spotlight-like
+        if (name.includes("pineapple float"))
+          charActive |= CharacterState.HAVE_PINEAPPLE_FLOAT;
+        if (name.includes("flying pineapple"))
+          charActive |= CharacterState.HAVE_FLYING_PINEAPPLE;
+        if (name.includes("super pineapple"))
+          charActive |= CharacterState.HAVE_SUPER_PINEAPPLE;
+
+        // Mod Effects (Harvesting, Punch Damage, etc.)
+        // Note: ModsEffects enum needs to be fully utilized
+        if (name.includes("harvester")) modActive |= ModsEffects.HARVESTER;
+        if (name.includes("punch damage")) modActive |= ModsEffects.PUNCH_DAMAGE;
+        // Add other mod effects as needed if defined in ModsEffects enum
       }
+
+      // Process functions for specific hardcoded effects that might not be in playMods
+      // or if func.add/rem are used for temporary effects, we handle persistent state here if needed.
     });
 
     this.data.state.mod = charActive;
