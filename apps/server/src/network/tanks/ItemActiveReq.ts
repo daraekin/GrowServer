@@ -32,9 +32,19 @@ export class ItemActiveReq {
 
     if (!itemExist || itemExist.amount <= 0) return;
 
+    // Use the central ItemHandler to process item usage
+    await this.base.itemHandler.handleItemUsage(
+      this.peer,
+      this.world,
+      item.id as number,
+      this.tank.data!.xPunch as number,
+      this.tank.data!.yPunch as number
+    );
+
+    // Restore Lock Logic as requested (even if handled in ItemHandler, we explicit check here for redundancy or specific override)
     if (item?.type === ActionTypes.LOCK) {
       switch (item.id) {
-        case 7188: {
+        case 7188: { // Blue Gem Lock -> 100 DL
           if ((this.peer.searchItem(1796)?.amount as number) + 100 > 200) {
             this.peer.send(
               Variant.from(
@@ -60,7 +70,7 @@ export class ItemActiveReq {
           }
           break;
         }
-        case 1796: {
+        case 1796: { // DL -> 100 WL
           if ((this.peer.searchItem(242)?.amount as number) + 100 > 200) {
             this.peer.send(
               Variant.from(
@@ -86,7 +96,7 @@ export class ItemActiveReq {
           }
           break;
         }
-        case 242: {
+        case 242: { // WL -> DL
           if ((this.peer.searchItem(242)?.amount as number) < 100) break;
           if ((this.peer.searchItem(1796)?.amount as number) + 1 > 200) {
             this.peer.send(
@@ -114,17 +124,11 @@ export class ItemActiveReq {
           break;
         }
       }
-      await this.peer.saveToCache();
-      await this.peer.saveToDatabase();
-      this.peer.inventory();
-      return;
     }
-
-    this.peer.equipClothes(item?.id as number);
-    // this.peer.checkModsEffect(true, this.tank);
 
     await this.peer.saveToCache();
     await this.peer.saveToDatabase();
-    this.peer.sendClothes();
+    this.peer.inventory(); // Ensure inventory visual update
+    this.peer.sendClothes(); // Update clothes visual if changed
   }
 }

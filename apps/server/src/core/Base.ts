@@ -34,6 +34,7 @@ import { ITEMS_DAT_FETCH_URL } from "@growserver/const";
 import { ItemsDat, ItemsDatMeta } from "grow-items";
 import { config as configServer } from "@growserver/config";
 import logger from "@growserver/logger";
+import { ItemHandler } from "./ItemHandler";
 
 __dirname = process.cwd();
 
@@ -45,8 +46,10 @@ export class Base {
   public cdn: CDNContent;
   public cache: Cache;
   public database: Database;
+  public itemHandler: ItemHandler;
 
   constructor() {
+    this.itemHandler = new ItemHandler(this);
     this.server = new Client({
       enet: {
         ip:                 "0.0.0.0",

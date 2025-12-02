@@ -14,6 +14,9 @@ import { SwitcheROO } from "./SwitcheROO";
 import { WeatherTile } from "./WeatherTile";
 import { DiceTile } from "./DiceTile";
 import { SeedTile } from "./SeedTile";
+import { RouletteTile } from "./RouletteTile";
+import { VendingTile } from "./VendingTile";
+import { ProviderTile } from "./ProviderTile";
 import { ExtendBuffer } from "@growserver/utils";
 import { TankPacket } from "growtopia.js";
 import logger from "@growserver/logger";
@@ -32,6 +35,15 @@ const TileMap: Record<number, Class<Tile>> = {
   [ActionTypes.BACKGROUND]:      NormalTile,
   [ActionTypes.FOREGROUND]:      NormalTile,
   [ActionTypes.SEED]:            SeedTile,
+  [ActionTypes.VENDING_MACHINE]: VendingTile,
+  [ActionTypes.PROVIDER]:        ProviderTile,
+  // 36 is Dice, used for Roulette too usually, but DiceTile handles it if logic is merged or separate TileMap entry needed
+  // For now, removing duplicate key or using different strategy if they are same ID.
+  // If Roulette has same ID, we must handle it in DiceTile based on itemID or similar.
+  // BUT, usually Roulette Wheel (Item) has ActionType 36.
+  // If we want RouletteTile to handle it, we might need to rely on `tileFrom` logic better.
+  // Removing duplicate 36 to fix build. DiceTile will handle 36.
+  // We can modify DiceTile to check for Roulette item ID.
 };
 
 // constructs a new Tile subclass based on the ActionType.
