@@ -17,20 +17,20 @@
     "@growserver/const": "workspace:*",
     "@growserver/types": "workspace:*",
     "@growserver/utils": "workspace:*",
-    "bcryptjs": "^3.0.2",
-    "dotenv": "^17.2.2",
-    "drizzle-orm": "^0.44.5",
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.44.7",
     "drizzle-zod": "^0.8.3",
-    "nanoid": "5.1.5",
-    "postgres": "^3.4.7",
-    "rimraf": "^6.0.1",
-    "tsx": "^4.20.5",
-    "zod": "^4.1.5"
+    "nanoid": "5.1.10",
+    "postgres": "^3.4.9",
+    "rimraf": "^6.1.3",
+    "tsx": "^4.21.0",
+    "zod": "^4.4.1"
   },
   "devDependencies": {
-    "@types/bun": "^1.2.21",
+    "@types/bun": "^1.3.13",
     "@types/node": "^24.3.1",
-    "drizzle-kit": "^0.31.4",
+    "drizzle-kit": "^0.31.10",
     "typescript": "^5.9.2"
   },
   "engines": {
