@@ -307,18 +307,36 @@ export class Base {
 
   public async getLatestCdn() {
     try {
-      const cdnData = (await fetchJSON(
-        "https://mari-project.jad.li/api/v1/growtopia/cache/latest",
-      )) as CDNContent;
-      const itemsDat = (await fetchJSON(ITEMS_DAT_FETCH_URL)) as {
+      const itemsDatInfo = (await fetchJSON(ITEMS_DAT_FETCH_URL)) as {
         content: string;
       };
 
+      // Extract version from items.dat filename (e.g., "items-v5.46.dat" -> "5.46")
+      const versionMatch = itemsDatInfo.content.match(/v(\d+\.\d+)/);
+      const gameVersion = versionMatch ? versionMatch[1] : "";
+
+      let cdnData: CDNContent;
+      try {
+        cdnData = (await fetchJSON(
+          "https://mari-project.jad.li/api/v1/growtopia/cache/latest",
+        )) as CDNContent;
+      } catch {
+        // Fallback: construct CDN data from items.dat version
+        logger.warn("CDN API unreachable, using fallback CDN data");
+        cdnData = {
+          version:      gameVersion,
+          uri:          `0${gameVersion.replace(".", "")}/${gameVersion.replace(".", "")}`,
+          itemsDatName: itemsDatInfo.content,
+        };
+      }
+
       const data: CDNContent = {
-        version:      cdnData.version,
+        version:      cdnData.version || gameVersion,
         uri:          cdnData.uri,
-        itemsDatName: itemsDat.content,
+        itemsDatName: itemsDatInfo.content,
       };
+
+      logger.info(`CDN version: ${data.version} | items.dat: ${data.itemsDatName}`);
 
       return data;
     } catch (e) {
