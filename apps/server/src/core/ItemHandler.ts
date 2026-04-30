@@ -26,21 +26,125 @@ export class ItemHandler {
     if (!existingItem || existingItem.amount <= 0) return false;
 
     switch (itemId) {
-      // Growtopia items: Gems consumables
+      // Gems
       case 112: {
-        // Gems (small)
         this.peer.data.gems += 1;
         this.peer.setGems(this.peer.data.gems);
         this.peer.removeItemInven(itemId, 1);
         return true;
       }
+
+      // Growtoken
+      case 1486: {
+        this.peer.send(
+          Variant.from(
+            "OnTalkBubble",
+            this.peer.data.netID,
+            "You can't use Growtokens directly. Visit the store!",
+            0,
+            1,
+          ),
+        );
+        return false;
+      }
+
+      // Candy / Food items that give small XP
+      case 272:   // Chocolate Block
+      case 3398:  // Baked Goods
+      case 3778:  // Candy Heart
+      case 3776:  // Candy Cane
+      case 4738:  // Super Firework
+      case 3506:  // Taffy
+      {
+        this.peer.removeItemInven(itemId, 1);
+        this.peer.addXp(5, false);
+        this.peer.send(
+          Variant.from(
+            "OnTalkBubble",
+            this.peer.data.netID,
+            `Yum! You ate a ${item.name || "treat"}. +5 XP`,
+            0,
+            1,
+          ),
+        );
+        return true;
+      }
+
+      // Rare candy / potions giving more XP
+      case 3832:  // Birthday Cake
+      case 5078:  // Legendary Orb
+      {
+        this.peer.removeItemInven(itemId, 1);
+        this.peer.addXp(50, false);
+        this.peer.send(
+          Variant.from(
+            "OnTalkBubble",
+            this.peer.data.netID,
+            `You used a ${item.name || "powerful item"}! +50 XP`,
+            0,
+            1,
+          ),
+        );
+        return true;
+      }
+
+      // Ances (Ancestral) items - not consumed, used from equip
       case 1784: {
-        // World Lock (used as currency display - not consumed)
+        return false;
+      }
+
+      // Surgery items (Syringe, etc.)
+      case 1260: {
+        // Syringe: heal effect
+        this.peer.removeItemInven(itemId, 1);
+        this.peer.send(
+          Variant.from(
+            "OnTalkBubble",
+            this.peer.data.netID,
+            "You feel better after using the syringe!",
+            0,
+            1,
+          ),
+        );
+        this.peer.sendEffect(46); // heal particle
+        return true;
+      }
+
+      // Paintable items
+      case 5750:  // Paint Bucket - Red
+      case 5752:  // Paint Bucket - Green
+      case 5754:  // Paint Bucket - Blue
+      case 5756:  // Paint Bucket - Yellow
+      case 5758:  // Paint Bucket - Charcoal
+      {
+        this.peer.send(
+          Variant.from(
+            "OnTalkBubble",
+            this.peer.data.netID,
+            "Use paint on a paintable block!",
+            0,
+            1,
+          ),
+        );
+        return false;
+      }
+
+      // Megaphone
+      case 482: {
+        this.peer.send(
+          Variant.from(
+            "OnTalkBubble",
+            this.peer.data.netID,
+            "Type /sb <message> to use the Super Broadcast!",
+            0,
+            1,
+          ),
+        );
         return false;
       }
 
       default: {
-        // Generic consumable: show message
+        // Generic consumable
         this.peer.send(
           Variant.from(
             "OnTalkBubble",

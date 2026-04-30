@@ -23,6 +23,8 @@ export interface TileData {
   dice?: Dice;
   provider?: Provider;
   displayBlock?: DisplayBlock;
+  vending?: VendingMachine;
+  spotlight?: Spotlight;
 }
 
 export interface Provider {
@@ -158,6 +160,16 @@ export interface Dice {
 export interface EnterArg {
   x?: number;
   y?: number;
+}
+
+export interface VendingMachine {
+  itemID: number;
+  price: number;
+  stock: number;
+}
+
+export interface Spotlight {
+  enabled: boolean;
 }
 
 export interface Ignore {

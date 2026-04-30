@@ -333,6 +333,16 @@ export class Tile {
 
     this.onDrop(peer, destroyedItemID);
 
+    // Award XP for breaking blocks (like real Growtopia)
+    const destroyedMeta = this.base.items.metadata.items.get(
+      destroyedItemID.toString(),
+    );
+    if (destroyedMeta && destroyedMeta.rarity) {
+      // XP formula: rarity / 5, minimum 1 XP
+      const xpAmount = Math.max(1, Math.floor(destroyedMeta.rarity / 5));
+      peer.addXp(xpAmount, false);
+    }
+
     const tank = TankPacket.from({
       type:   TankTypes.TILE_CHANGE_REQUEST,
       info:   18,
