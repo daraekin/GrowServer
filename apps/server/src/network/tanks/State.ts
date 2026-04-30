@@ -3,7 +3,11 @@ import { Base } from "../../core/Base";
 import { Peer } from "../../core/Peer";
 import { World } from "../../core/World";
 import { TileData } from "@growserver/types";
-import { ActionTypes } from "@growserver/const";
+import {
+  ActionTypes,
+  Y_LAVA_START,
+  WORLD_SIZE,
+} from "@growserver/const";
 
 export class State {
   private pos: number;
@@ -51,6 +55,29 @@ export class State {
       return;
     if (this.block === undefined) return;
 
+    // Check lava death: if the player falls into the lava zone
+    const playerTileY = Math.floor(
+      (this.tank.data?.yPos as number) / 32,
+    );
+    if (playerTileY >= Y_LAVA_START) {
+      this.peer.respawn();
+      return;
+    }
+
+    // Check if player goes out of world bounds (void death)
+    const playerTileX = Math.floor(
+      (this.tank.data?.xPos as number) / 32,
+    );
+    if (
+      playerTileX < 0 ||
+      playerTileX >= WORLD_SIZE.WIDTH ||
+      playerTileY < 0 ||
+      playerTileY >= WORLD_SIZE.HEIGHT
+    ) {
+      this.peer.respawn();
+      return;
+    }
+
     const itemMeta = this.base.items.metadata.items.get(
       (this.block.fg || this.block.bg).toString(),
     )!;
@@ -68,6 +95,20 @@ export class State {
           x: Math.round((this.tank.data?.xPos as number) / 32),
           y: Math.round((this.tank.data?.yPos as number) / 32),
         };
+        break;
+      }
+
+      case ActionTypes.DEADLY_BLOCK:
+      case ActionTypes.LAVA: {
+        // Player touched a deadly/lava block, respawn them
+        this.peer.respawn();
+        break;
+      }
+
+      case ActionTypes.DEADLY_IF_ON: {
+        // Deadly if the block is toggled on (SwitcheROO-based)
+        // Only kills if the block is active (not toggled off)
+        this.peer.respawn();
         break;
       }
 

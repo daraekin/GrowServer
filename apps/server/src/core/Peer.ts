@@ -746,7 +746,7 @@ export class Peer extends OldPeer<PeerData> {
   // Check every clothes playmods & apply it
   public formPlayMods() {
     let charActive = 0;
-    const modActive = 0;
+    let modActive = 0;
 
     Object.keys(this.data.clothing).forEach((k) => {
       const itemInfo = this.base.items.wiki.find(
@@ -756,8 +756,46 @@ export class Peer extends OldPeer<PeerData> {
 
       for (const mod of playMods) {
         const name = mod.toLowerCase();
+
+        // Movement mods
         if (name.includes("double jump"))
           charActive |= CharacterState.DOUBLE_JUMP;
+        if (name.includes("speedy") || name.includes("speed"))
+          charActive |= CharacterState.WALK_IN_BLOCKS;
+
+        // Visibility mods
+        if (name.includes("invisib") || name.includes("invis"))
+          charActive |= CharacterState.IS_INVISIBLE;
+
+        // Visual mods
+        if (name.includes("devil horns"))
+          charActive |= CharacterState.DEVIL_HORNS;
+        if (name.includes("golden halo") || name.includes("angel halo"))
+          charActive |= CharacterState.GOLDEN_HALO;
+        if (name.includes("no hands") || name.includes("nohands"))
+          charActive |= CharacterState.NO_HANDS;
+        if (name.includes("no eyes") || name.includes("noeyes"))
+          charActive |= CharacterState.NO_EYES;
+        if (name.includes("no body") || name.includes("nobody"))
+          charActive |= CharacterState.NO_BODY;
+        if (name.includes("shining") || name.includes("sparkle"))
+          charActive |= CharacterState.IS_SHINING;
+        if (name.includes("haunted shadows"))
+          charActive |= CharacterState.HAVE_HAUNTED_SHADOWS;
+        if (name.includes("reflector"))
+          charActive |= CharacterState.HAVE_REFLECTOR;
+        if (name.includes("pineapple float"))
+          charActive |= CharacterState.HAVE_PINEAPPLE_FLOAT;
+        if (name.includes("flying pineapple"))
+          charActive |= CharacterState.HAVE_FLYING_PINEAPPLE;
+        if (name.includes("super pineapple"))
+          charActive |= CharacterState.HAVE_SUPER_PINEAPPLE;
+
+        // Effect mods
+        if (name.includes("harvest"))
+          modActive |= ModsEffects.HARVESTER;
+        if (name.includes("punch damage") || name.includes("power"))
+          modActive |= ModsEffects.PUNCH_DAMAGE;
       }
     });
 
