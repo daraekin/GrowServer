@@ -622,6 +622,28 @@ export class Peer extends OldPeer<PeerData> {
     this.data.world = worldName;
 
     const world = this.currentWorld();
+    await world?.getData();
+
+    // Check minimum level requirement from world lock
+    if (world && world.data.worldLockIndex !== undefined) {
+      const lockBlock = world.data.blocks[world.data.worldLockIndex];
+      if (lockBlock?.worldLockData?.minLevel && lockBlock.worldLockData.minLevel > 0) {
+        const isOwner = lockBlock.lock?.ownerUserID === this.data.userID;
+        const isAdmin = lockBlock.lock?.adminIDs?.includes(this.data.userID);
+        const isDev = this.data.role === ROLE.DEVELOPER;
+
+        if (!isOwner && !isAdmin && !isDev && this.data.level < lockBlock.worldLockData.minLevel) {
+          this.send(
+            Variant.from(
+              "OnConsoleMessage",
+              `\`4You need to be at least level ${lockBlock.worldLockData.minLevel} to enter this world! You are level ${this.data.level}.`,
+            ),
+          );
+          this.data.world = "EXIT";
+          return;
+        }
+      }
+    }
 
     const mainDoor = world?.data.blocks?.find((block) => block.fg === 6);
 
