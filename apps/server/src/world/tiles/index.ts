@@ -14,24 +14,46 @@ import { SwitcheROO } from "./SwitcheROO";
 import { WeatherTile } from "./WeatherTile";
 import { DiceTile } from "./DiceTile";
 import { SeedTile } from "./SeedTile";
+import { ProviderTile } from "./ProviderTile";
+import { VendingTile } from "./VendingTile";
+import { MannequinTile } from "./MannequinTile";
 import { ExtendBuffer } from "@growserver/utils";
 import { TankPacket } from "growtopia.js";
 import logger from "@growserver/logger";
 
 const TileMap: Record<number, Class<Tile>> = {
-  [ActionTypes.DOOR]:            DoorTile,
-  [ActionTypes.MAIN_DOOR]:       DoorTile,
-  [ActionTypes.PORTAL]:          DoorTile,
-  [ActionTypes.SIGN]:            SignTile,
-  [ActionTypes.LOCK]:            LockTile,
-  [ActionTypes.HEART_MONITOR]:   HeartMonitorTile,
-  [ActionTypes.DISPLAY_BLOCK]:   DisplayBlockTile,
-  [ActionTypes.SWITCHEROO]:      SwitcheROO,
-  [ActionTypes.WEATHER_MACHINE]: WeatherTile,
-  [ActionTypes.DICE]:            DiceTile,
-  [ActionTypes.BACKGROUND]:      NormalTile,
-  [ActionTypes.FOREGROUND]:      NormalTile,
-  [ActionTypes.SEED]:            SeedTile,
+  [ActionTypes.DOOR]:                        DoorTile,
+  [ActionTypes.MAIN_DOOR]:                   DoorTile,
+  [ActionTypes.PORTAL]:                      DoorTile,
+  [ActionTypes.SIGN]:                        SignTile,
+  [ActionTypes.LOCK]:                        LockTile,
+  [ActionTypes.HEART_MONITOR]:               HeartMonitorTile,
+  [ActionTypes.DISPLAY_BLOCK]:               DisplayBlockTile,
+  [ActionTypes.SWITCHEROO]:                  SwitcheROO,
+  [ActionTypes.WEATHER_MACHINE]:             WeatherTile,
+  [ActionTypes.DICE]:                        DiceTile,
+  [ActionTypes.BACKGROUND]:                  NormalTile,
+  [ActionTypes.FOREGROUND]:                  NormalTile,
+  [ActionTypes.SEED]:                        SeedTile,
+  [ActionTypes.PROVIDER]:                    ProviderTile,
+  [ActionTypes.VENDING_MACHINE]:             VendingTile,
+  [ActionTypes.MANNEQUIN]:                   MannequinTile,
+  [ActionTypes.PLATFORM]:                    NormalTile,
+  [ActionTypes.BOUNCY]:                      NormalTile,
+  [ActionTypes.POINTY]:                      NormalTile,
+  [ActionTypes.TRAMPOLINE]:                  NormalTile,
+  [ActionTypes.CHECKPOINT]:                  NormalTile,
+  [ActionTypes.CONSUMABLE]:                  NormalTile,
+  [ActionTypes.CLOTHES]:                     NormalTile,
+  [ActionTypes.CHEST]:                       NormalTile,
+  [ActionTypes.CHEMICAL]:                    NormalTile,
+  [ActionTypes.BOOMBOX]:                     NormalTile,
+  [ActionTypes.ICE]:                         NormalTile,
+  [ActionTypes.LAVA]:                        NormalTile,
+  [ActionTypes.DEADLY_BLOCK]:                NormalTile,
+  [ActionTypes.SFX_WITH_EXTRA_FRAME]:        NormalTile,
+  [ActionTypes.FOREGROUND_WITH_EXTRA_FRAME]: NormalTile,
+  [ActionTypes.BACKGD_SFX_EXTRA_FRAME]:      NormalTile,
 };
 
 // constructs a new Tile subclass based on the ActionType.

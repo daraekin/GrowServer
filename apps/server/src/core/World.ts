@@ -230,7 +230,7 @@ ${peer.data.lastVisitedWorlds
     }
 
     // World data
-    buffer.writeUint16LE(0x14); // Version/Type byte (20 in decimal)
+    buffer.writeUint16LE(0x16); // World version (22 for latest GT client v5.46+)
     buffer.writeUint32LE(0x40, 2); // Flags or version
     buffer.writeUint16LE(this.worldName.length, 6);
     buffer.write(this.worldName, 8);

@@ -622,6 +622,28 @@ export class Peer extends OldPeer<PeerData> {
     this.data.world = worldName;
 
     const world = this.currentWorld();
+    await world?.getData();
+
+    // Check minimum level requirement from world lock
+    if (world && world.data.worldLockIndex !== undefined) {
+      const lockBlock = world.data.blocks[world.data.worldLockIndex];
+      if (lockBlock?.worldLockData?.minLevel && lockBlock.worldLockData.minLevel > 0) {
+        const isOwner = lockBlock.lock?.ownerUserID === this.data.userID;
+        const isAdmin = lockBlock.lock?.adminIDs?.includes(this.data.userID);
+        const isDev = this.data.role === ROLE.DEVELOPER;
+
+        if (!isOwner && !isAdmin && !isDev && this.data.level < lockBlock.worldLockData.minLevel) {
+          this.send(
+            Variant.from(
+              "OnConsoleMessage",
+              `\`4You need to be at least level ${lockBlock.worldLockData.minLevel} to enter this world! You are level ${this.data.level}.`,
+            ),
+          );
+          this.data.world = "EXIT";
+          return;
+        }
+      }
+    }
 
     const mainDoor = world?.data.blocks?.find((block) => block.fg === 6);
 
@@ -746,7 +768,7 @@ export class Peer extends OldPeer<PeerData> {
   // Check every clothes playmods & apply it
   public formPlayMods() {
     let charActive = 0;
-    const modActive = 0;
+    let modActive = 0;
 
     Object.keys(this.data.clothing).forEach((k) => {
       const itemInfo = this.base.items.wiki.find(
@@ -756,8 +778,46 @@ export class Peer extends OldPeer<PeerData> {
 
       for (const mod of playMods) {
         const name = mod.toLowerCase();
+
+        // Movement mods
         if (name.includes("double jump"))
           charActive |= CharacterState.DOUBLE_JUMP;
+        if (name.includes("speedy") || name.includes("speed"))
+          charActive |= CharacterState.WALK_IN_BLOCKS;
+
+        // Visibility mods
+        if (name.includes("invisib") || name.includes("invis"))
+          charActive |= CharacterState.IS_INVISIBLE;
+
+        // Visual mods
+        if (name.includes("devil horns"))
+          charActive |= CharacterState.DEVIL_HORNS;
+        if (name.includes("golden halo") || name.includes("angel halo"))
+          charActive |= CharacterState.GOLDEN_HALO;
+        if (name.includes("no hands") || name.includes("nohands"))
+          charActive |= CharacterState.NO_HANDS;
+        if (name.includes("no eyes") || name.includes("noeyes"))
+          charActive |= CharacterState.NO_EYES;
+        if (name.includes("no body") || name.includes("nobody"))
+          charActive |= CharacterState.NO_BODY;
+        if (name.includes("shining") || name.includes("sparkle"))
+          charActive |= CharacterState.IS_SHINING;
+        if (name.includes("haunted shadows"))
+          charActive |= CharacterState.HAVE_HAUNTED_SHADOWS;
+        if (name.includes("reflector"))
+          charActive |= CharacterState.HAVE_REFLECTOR;
+        if (name.includes("pineapple float"))
+          charActive |= CharacterState.HAVE_PINEAPPLE_FLOAT;
+        if (name.includes("flying pineapple"))
+          charActive |= CharacterState.HAVE_FLYING_PINEAPPLE;
+        if (name.includes("super pineapple"))
+          charActive |= CharacterState.HAVE_SUPER_PINEAPPLE;
+
+        // Effect mods
+        if (name.includes("harvest"))
+          modActive |= ModsEffects.HARVESTER;
+        if (name.includes("punch damage") || name.includes("power"))
+          modActive |= ModsEffects.PUNCH_DAMAGE;
       }
     });
 

@@ -227,7 +227,7 @@ export class LockTile extends Tile {
     } else {
       dialog.addCheckbox(
         "disable_music",
-        "Disable Custom Music Blocks (NOT IMPLEMENTED)",
+        "Disable Custom Music Blocks",
         this.data.worldLockData.customMusicBlocksDisabled
           ? "selected"
           : "not_selected",
@@ -235,7 +235,7 @@ export class LockTile extends Tile {
       if (!this.data.worldLockData.customMusicBlocksDisabled) {
         dialog.addInputBox(
           "tempo",
-          "Music BPM (NOT IMPLEMENTED)",
+          "Music BPM",
           this.data.worldLockData.bpm,
           3,
         );
@@ -243,24 +243,24 @@ export class LockTile extends Tile {
       dialog
         .addCheckbox(
           "invisible_music",
-          "Make Custom Music Block Invisible (NOT IMPLEMENTED)",
+          "Make Custom Music Blocks Invisible",
           this.data.worldLockData.invisMusicBlocks
             ? "selected"
             : "not_selected",
         )
         .addCheckbox(
           "home_world",
-          "Set as Home World (NOT IMPLEMENTED)",
+          "Set as Home World",
           "not_selected",
         )
         .addInputBox(
           "minimum_level",
-          "World Level: (NOT IMPLEMENTED)",
+          "Minimum Entry Level",
           this.data.worldLockData.minLevel,
         )
-        .addSmallText("Set minimum world entry level")
-        .addButton("session_length", "Set World Timer (NOT IMPLEMENTED)")
-        .addButton("set_category", `Category: None (NOT IMPLEMENTED)`);
+        .addSmallText("Set minimum world entry level (0-125)")
+        .addButton("session_length", "Set World Timer")
+        .addButton("set_category", `Category: None`);
     }
 
     dialog.endDialog("area_lock_edit", "Cancel", "OK");

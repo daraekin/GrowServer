@@ -34,6 +34,10 @@ export class AreaLockEdit {
       build_only: string;
       limit_admin: string;
       buttonClicked: string;
+      disable_music: string;
+      tempo: string;
+      invisible_music: string;
+      minimum_level: string;
     }>,
   ) {
     this.world = this.peer.currentWorld()!;
@@ -70,6 +74,33 @@ export class AreaLockEdit {
       ? LockPermission.BUILD
       : mLock?.defaultPermission;
     this.block.lock.adminLimited = adminLimitedAccess;
+
+    // Handle World Lock specific settings (BPM, music, minimum level)
+    if (this.block.worldLockData) {
+      // Music BPM
+      if (this.action.tempo) {
+        const bpm = parseInt(this.action.tempo);
+        if (bpm >= 20 && bpm <= 500) {
+          this.block.worldLockData.bpm = bpm;
+        }
+      }
+
+      // Disable custom music blocks
+      this.block.worldLockData.customMusicBlocksDisabled =
+        this.action.disable_music === "1";
+
+      // Invisible music blocks
+      this.block.worldLockData.invisMusicBlocks =
+        this.action.invisible_music === "1";
+
+      // Minimum world entry level
+      if (this.action.minimum_level) {
+        const minLevel = parseInt(this.action.minimum_level);
+        if (minLevel >= 0 && minLevel <= 125) {
+          this.block.worldLockData.minLevel = minLevel;
+        }
+      }
+    }
 
     if (this.action.buttonClicked === "reapply_lock" && mLock) {
       for (const ownedTiles of this.block.lock.ownedTiles) {
