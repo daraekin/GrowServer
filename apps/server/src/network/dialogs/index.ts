@@ -15,6 +15,7 @@ import { DisplayBlockEdit } from "./DisplayBlockEdit";
 import { DiceEdit } from "./DiceEdit";
 import { VendingEdit } from "./VendingEdit";
 import { MannequinEdit } from "./MannequinEdit";
+import { WrenchPlayerEnd } from "./WrenchPlayerEnd";
 
 export const DialogMap: Record<
   string,
@@ -38,4 +39,5 @@ export const DialogMap: Record<
   ["dice_edit"]:          DiceEdit,
   ["vending_edit"]:       VendingEdit,
   ["mannequin_edit"]:     MannequinEdit,
+  ["wrench_player_end"]:  WrenchPlayerEnd,
 };
